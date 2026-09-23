@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neuralstream-core"
+version = "2.0.0"
+description = "Enterprise-grade streaming autoencoder with dynamic precision, drift radar, and mission-control HUD"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "NeuralStream Team" },
+]
+keywords = ["machine-learning", "autoencoder", "drift-detection", "anomaly-detection", "streaming"]
+
+dependencies = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+    "psutil>=5.9.0",
+    "streamlit>=1.28.0",
+    "plotly>=5.18.0",
+    "Pillow>=10.0.0",
+    "pyyaml>=6.0.0",
+    "pydantic>=2.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-benchmark>=4.0.0",
+]
+
+[project.scripts]
+neuralstream = "cli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["core*", "config*", "dashboard*", "benchmarks*", "cli*"]
+exclude = ["tests*", "assets*", "logs*", "data*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

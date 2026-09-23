@@ -1,0 +1,100 @@
+# ============================================================
+# Edge Profile
+# Minimal resource usage for low-power devices (Raspberry Pi, Jetson)
+# ============================================================
+
+project_name: "NeuralStream-Core"
+version: "2.0.0"
+debug: false
+seed: 42
+log_level: "WARNING"
+log_dir: "logs"
+
+model:
+  architecture: "edge_ae"
+  in_channels: 1
+  input_size: 32         # Smaller input
+  latent_dim: 16         # Compressed bottleneck
+  hidden_dims: [16, 32]
+  dropout_rate: 0.05
+  use_batch_norm: true
+  activation: "leaky_relu"
+
+stream:
+  format: "synthetic"
+  batch_size: 8          # Small batches
+  shape: [1, 32, 32]
+  buffer_size: 200
+  shuffle: false
+  normalize: true
+  augment: false
+
+precision:
+  initial_mode: "FP32"
+  target_latency_ms: 5.0   # Relaxed target for slower hardware
+  window_size: 20
+  cooldown_ticks: 5
+  enable_thermal_model: true
+
+drift:
+  methods: ["wasserstein"]   # Single method to save CPU
+  sample_size: 200
+  evaluation_interval: 10   # Less frequent
+  alert_threshold: 0.15
+  critical_threshold: 0.35
+  history_length: 100
+  layer_names: ["encoder_conv.0", "encoder_fc.0"]
+
+adaptation:
+  error_threshold: 0.20
+  buffer_capacity: 32
+  micro_batch_size: 8
+  learning_rate: 0.00001
+  max_grad_norm: 1.0
+  ewc_lambda: 0.5
+  enable_ewc: true
+
+anomaly:
+  reconstruction_weight: 0.5
+  isolation_forest_weight: 0.3
+  mahalanobis_weight: 0.2
+  contamination: 0.05
+  n_estimators: 30          # Fewer estimators
+  score_ema_alpha: 0.15
+
+ipc:
+  ring_buffer_capacity: 50
+  channel_count: 4
+
+telemetry:
+  collection_interval_ms: 200.0
+  history_length: 200
+  enable_cpu_tracking: true
+  enable_memory_tracking: true
+  enable_disk_tracking: false
+  enable_network_tracking: false
+
+dashboard:
+  theme: "cyber_dark"
+  refresh_rate_ms: 100       # Slower refresh
+  max_sparkline_points: 50
+  max_trajectory_points: 100
+  enable_3d_plots: false     # Disable 3D on edge
+  enable_heatmaps: true
+  enable_oscilloscope: false
+
+circuit_breaker:
+  enable: true
+  nan_detection: true
+  inf_detection: true
+  magnitude_threshold: 1000000.0
+  max_consecutive_faults: 3
+  recovery_timeout_ms: 5.0
+
+workers:
+  num_inference_workers: 1
+  num_adaptation_workers: 0
+  num_drift_workers: 0
+  task_queue_size: 32
+  worker_timeout_s: 15.0
+  enable_auto_scaling: false

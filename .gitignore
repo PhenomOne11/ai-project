@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.wheel
+*.npy
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# NeuralStream runtime
+logs/
+data/
+*.log
+benchmark_report.html
+benchmarks/baseline.json
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+!tests/**/*.pt    # test fixtures

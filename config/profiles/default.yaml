@@ -1,0 +1,114 @@
+# ============================================================
+# NeuralStream-Core Default Configuration Profile
+# ============================================================
+
+project_name: "NeuralStream-Core"
+version: "2.0.0"
+debug: false
+seed: 42
+log_level: "INFO"
+log_dir: "logs"
+
+model:
+  architecture: "edge_ae"
+  in_channels: 1
+  input_size: 64
+  latent_dim: 32
+  hidden_dims: [32, 64, 128]
+  dropout_rate: 0.1
+  use_batch_norm: true
+  activation: "leaky_relu"
+
+stream:
+  format: "synthetic"
+  batch_size: 16
+  shape: [1, 64, 64]
+  buffer_size: 1000
+  shuffle: true
+  normalize: true
+  augment: false
+
+precision:
+  initial_mode: "FP32"
+  target_latency_ms: 3.0
+  window_size: 30
+  upscale_threshold: 0.8
+  downscale_threshold_fp16: 1.5
+  downscale_threshold_int8: 2.5
+  cooldown_ticks: 10
+  enable_thermal_model: true
+
+drift:
+  methods: ["wasserstein"]
+  sample_size: 500
+  alert_threshold: 0.15
+  critical_threshold: 0.35
+  evaluation_interval: 5
+  layer_names:
+    - "encoder_conv.0"
+    - "encoder_conv.2"
+    - "encoder_fc.0"
+  enable_heatmap: true
+  history_length: 200
+
+adaptation:
+  error_threshold: 0.18
+  buffer_capacity: 64
+  micro_batch_size: 16
+  learning_rate: 0.00001
+  max_grad_norm: 1.0
+  ewc_lambda: 0.5
+  enable_ewc: true
+  adaptation_cooldown_ms: 100.0
+
+anomaly:
+  reconstruction_weight: 0.5
+  isolation_forest_weight: 0.3
+  mahalanobis_weight: 0.2
+  contamination: 0.05
+  n_estimators: 100
+  score_ema_alpha: 0.1
+
+ipc:
+  ring_buffer_capacity: 100
+  channel_count: 4
+  channel_names: ["latents", "drift", "telemetry", "anomaly"]
+  enable_compression: false
+  heartbeat_interval_ms: 500.0
+
+telemetry:
+  collection_interval_ms: 100.0
+  history_length: 1000
+  enable_cpu_tracking: true
+  enable_memory_tracking: true
+  enable_disk_tracking: false
+  enable_network_tracking: false
+  export_format: "json"
+
+dashboard:
+  theme: "cyber_dark"
+  refresh_rate_ms: 30
+  max_sparkline_points: 100
+  max_trajectory_points: 500
+  enable_3d_plots: true
+  enable_heatmaps: true
+  enable_oscilloscope: true
+  animation_duration_ms: 300
+  panel_columns: 2
+
+circuit_breaker:
+  enable: true
+  nan_detection: true
+  inf_detection: true
+  magnitude_threshold: 1000000.0
+  max_consecutive_faults: 5
+  recovery_timeout_ms: 2.0
+  quarantine_buffer_size: 50
+
+workers:
+  num_inference_workers: 2
+  num_adaptation_workers: 1
+  num_drift_workers: 1
+  task_queue_size: 100
+  worker_timeout_s: 30.0
+  enable_auto_scaling: false

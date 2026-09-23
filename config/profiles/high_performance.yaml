@@ -1,0 +1,61 @@
+# ============================================================
+# High Performance Profile
+# Optimized for maximum throughput on capable hardware
+# ============================================================
+
+project_name: "NeuralStream-Core"
+debug: false
+seed: 42
+log_level: "WARNING"
+
+model:
+  architecture: "edge_ae"
+  in_channels: 1
+  input_size: 64
+  latent_dim: 64
+  hidden_dims: [64, 128, 256]
+  dropout_rate: 0.05
+  use_batch_norm: true
+
+stream:
+  batch_size: 32
+  buffer_size: 2000
+  augment: true
+
+precision:
+  target_latency_ms: 1.5
+  window_size: 50
+  cooldown_ticks: 5
+  enable_thermal_model: true
+
+drift:
+  methods: ["wasserstein", "mmd"]
+  sample_size: 1000
+  evaluation_interval: 3
+  history_length: 500
+
+adaptation:
+  buffer_capacity: 128
+  micro_batch_size: 32
+  learning_rate: 0.00005
+
+anomaly:
+  n_estimators: 200
+
+ipc:
+  ring_buffer_capacity: 500
+
+telemetry:
+  collection_interval_ms: 50.0
+  history_length: 5000
+
+dashboard:
+  refresh_rate_ms: 16
+  max_sparkline_points: 200
+  max_trajectory_points: 1000
+
+workers:
+  num_inference_workers: 4
+  num_adaptation_workers: 2
+  num_drift_workers: 2
+  enable_auto_scaling: true

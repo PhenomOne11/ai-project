@@ -1,0 +1,80 @@
+# ============================================================
+# CI Profile
+# Fast, deterministic, minimal output for continuous integration
+# ============================================================
+
+project_name: "NeuralStream-Core"
+version: "2.0.0"
+debug: false
+seed: 1337              # Fixed seed for reproducibility
+log_level: "WARNING"
+log_dir: "logs"
+
+model:
+  architecture: "edge_ae"
+  in_channels: 1
+  input_size: 32
+  latent_dim: 16
+  hidden_dims: [16, 32]
+  use_batch_norm: true
+
+stream:
+  format: "synthetic"
+  batch_size: 4
+  shape: [1, 32, 32]
+  buffer_size: 100
+  shuffle: false
+  normalize: true
+
+precision:
+  initial_mode: "FP32"
+  target_latency_ms: 10.0    # Relaxed; CI machines vary
+  window_size: 10
+  cooldown_ticks: 3
+  enable_thermal_model: false
+
+drift:
+  methods: ["wasserstein"]   # Fastest
+  sample_size: 100
+  evaluation_interval: 5
+  alert_threshold: 0.15
+  critical_threshold: 0.35
+  history_length: 50
+  layer_names: ["encoder_conv.0"]
+
+adaptation:
+  error_threshold: 0.20
+  buffer_capacity: 16
+  micro_batch_size: 4
+  learning_rate: 0.00001
+  enable_ewc: false          # Skip Fisher computation
+
+anomaly:
+  n_estimators: 20
+  contamination: 0.05
+
+ipc:
+  ring_buffer_capacity: 20
+
+telemetry:
+  collection_interval_ms: 500.0
+  history_length: 100
+  enable_cpu_tracking: false
+  enable_memory_tracking: true
+  enable_disk_tracking: false
+  enable_network_tracking: false
+
+dashboard:
+  refresh_rate_ms: 200
+  max_sparkline_points: 20
+  max_trajectory_points: 50
+  enable_3d_plots: false
+  enable_heatmaps: false
+  enable_oscilloscope: false
+
+workers:
+  num_inference_workers: 1
+  num_adaptation_workers: 0
+  num_drift_workers: 0
+  task_queue_size: 10
+  worker_timeout_s: 10.0
